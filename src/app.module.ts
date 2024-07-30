@@ -4,8 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './module/user/user.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ envFilePath: '.env' }),
+  imports: [    ConfigModule.forRoot({ envFilePath: '.env' }),
     MongooseModule.forRoot(process.env.DB),
     UserModule,
   ],
