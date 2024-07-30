@@ -8,6 +8,6 @@ import forFeatureDb from 'src/db/for-feature.db';
   controllers: [UserController],
   providers: [UserService],
   imports: [MongooseModule.forFeature(forFeatureDb)],
-  exports: [UserService]
+  exports: [UserService],
 })
 export class UserModule {}

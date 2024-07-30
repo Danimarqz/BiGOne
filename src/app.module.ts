@@ -5,9 +5,9 @@ import { UserModule } from './module/user/user.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '.env'}),
+    ConfigModule.forRoot({ envFilePath: '.env' }),
     MongooseModule.forRoot(process.env.DB),
-    UserModule
-  ]
+    UserModule,
+  ],
 })
 export class AppModule {}
