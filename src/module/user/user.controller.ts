@@ -12,15 +12,16 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async findAll() {
+  async findAll() : Promise<User[]> {
     try {
-      const users = await this.userService.findAll();
+      const users : User[] = await this.userService.findAll();
       return users;
     } catch (error) {
       throw new HttpException(
@@ -31,9 +32,9 @@ export class UserController {
   }
 
   @Get(':email')
-  async findOne(@Param('email') email: string) {
+  async findOne(@Param('email') email: string) : Promise<User> {
     try {
-      const user = await this.userService.findByEmail(email);
+      const user : User = await this.userService.findByEmail(email);
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
@@ -50,9 +51,9 @@ export class UserController {
   }
 
   @Post()
-  async register(@Body() createUserDto: CreateUserDto) {
+  async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
-      const user = await this.userService.create(createUserDto);
+      const user : User = await this.userService.create(createUserDto);
       return user;
     } catch (error) {
       if (error.status === HttpStatus.CONFLICT) {
@@ -69,9 +70,9 @@ export class UserController {
   async update(
     @Param('email') email: string,
     @Body() updateUserDto: UpdateUserDto,
-  ) {
+  ) : Promise<User> {
     try {
-      const user = await this.userService.update(email, updateUserDto);
+      const user : User = await this.userService.update(email, updateUserDto);
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
@@ -90,8 +91,8 @@ export class UserController {
   @Delete(':email')
   async remove(@Param('email') email: string) {
     try {
-      const result = await this.userService.remove(email);
-      if (result.deletedCount === 0) {
+      const result : number = await this.userService.remove(email);
+      if (result === 0) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
       return { message: 'User deleted successfully' };

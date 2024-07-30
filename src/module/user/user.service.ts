@@ -9,6 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './entities/user.entity';
 import { Model } from 'mongoose';
+import { DeleteResult } from 'mongodb';
 const options = { _id: 0, userId: 0 };
 @Injectable()
 export class UserService {
@@ -77,28 +78,23 @@ export class UserService {
       return updatedUser as User | null;
     } catch (error) {
       if (error.code === 11000) {
-        // Mongoose duplicate key error code
-        if (error.keyPattern.Email) {
           throw new ConflictException('Email already exists');
-        }
       }
       throw error;
     }
   }
 
-  async remove(email: string): Promise<{ deletedCount?: number }> {
-    const result = await this.userModel.deleteOne({ Email: email }).exec();
-    return result;
+  async remove(email: string): Promise<number> {
+    const result : DeleteResult = await this.userModel.deleteOne({ Email: email }).exec();
+    return result.deletedCount;
   }
 
   async validateUser(email: string, password: string): Promise<boolean> {
     const user: User = await this.findByEmail(email);
-    if (user && (await bcrypt.compare(password, user.Password))) {
-      if (user.DeviceId && this.checkDeviceIdExists(user.DeviceId)) {
+    if (user && (await bcrypt.compare(password, user.Password) && user.DeviceId && this.checkDeviceIdExists(user.DeviceId))) {
         user.Lastlogin = Date.now();
         await this.update(user.Email, user);
         return true;
-      }
     }
     return false;
   }
